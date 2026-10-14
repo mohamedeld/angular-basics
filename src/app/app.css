@@ -1,0 +1,77 @@
+:host {
+  display: block;
+  font-family: Arial, sans-serif;
+  color: #222;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+h1 {
+  margin-bottom: 12px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+button {
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.85;
+}
+
+.secondary {
+  background: #555;
+}
+
+.comparison {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.card {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  min-width: 0;
+}
+
+.card h2 {
+  font-size: 20px;
+}
+
+.option {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.note {
+  margin-top: 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #666;
+}
+
+@media (max-width: 900px) {
+  .comparison {
+    grid-template-columns: 1fr;
+  }
+}
