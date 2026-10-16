@@ -1,4 +1,5 @@
 import { Component, computed, linkedSignal, resource, signal } from '@angular/core';
+import { Profile } from './profile/profile';
 
 interface ShippingOption {
   id: number;
@@ -10,6 +11,7 @@ interface ShippingOption {
   selector: 'app-root',
   templateUrl: 'app.html',
   styleUrl: './app.css',
+  imports: [Profile],
 })
 export class App {
   userId = signal(1);
@@ -35,7 +37,12 @@ export class App {
     this.userResource.hasValue() ? this.userResource.value().name : undefined,
   );
 
+  newData = signal(0);
+
   nextUser() {
     this.userId.update((prev) => prev + 1);
+  }
+  parentClicked(val: number) {
+    console.log('first', val);
   }
 }

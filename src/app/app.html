@@ -11,4 +11,11 @@
   <p>Email: {{ userResource.value().email }}</p>
 }
 
+<app-profile
+  [value]="userId()"
+  [(valueModel)]="newData"
+  (planClosed)="parentClicked($event)"
+></app-profile>
 <button (click)="nextUser()">Next User</button>
+
+<p>new {{ newData() }}</p>
