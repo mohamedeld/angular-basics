@@ -1,0 +1,40 @@
+<mat-sidenav-container class="!min-h-screen !bg-gray-100">
+  <mat-sidenav mode="side" [opened]="true" class="!w-[240px] !bg-white px-3">
+    <div class="py-4">
+      <h2 class="mb-4 text-lg font-bold">Categories</h2>
+    </div>
+
+    <mat-nav-list>
+      @for (cat of categories(); track cat) {
+        <mat-list-item
+          class="my-2"
+          [routerLink]="['/products', cat.toLowerCase()]"
+          [activated]="cat.toLowerCase() === category().toLowerCase()"
+        >
+          <span
+            matListItemTitle
+            [class.!text-white]="cat.toLowerCase() === category().toLowerCase()"
+          >
+            {{ cat | titlecase }}
+          </span>
+        </mat-list-item>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="!bg-gray-100">
+    <main class="min-w-0 p-4 md:p-6">
+      <h1 class="mb-6 text-2xl font-bold text-gray-900">
+        {{ category() | titlecase }}
+      </h1>
+      <p class="text-base text-gray-600 mb-6">{{ filteredProducts()?.length }} Products</p>
+      <div class="responsive-grid">
+        @for (item of filteredProducts(); track item.id) {
+          <app-product-card [product]="item" (productOutput)="addToCart($event)" />
+        } @empty {
+          <p class="text-gray-500">No products found.</p>
+        }
+      </div>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

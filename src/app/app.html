@@ -1,21 +1,2 @@
-<h2>User Details</h2>
-
-<p>Requested ID: {{ userId() }}</p>
-
-@if (userResource.isLoading()) {
-  <p>Loading user...</p>
-} @else if (userResource.error()) {
-  <p>Failed to load user.</p>
-} @else if (userResource.hasValue()) {
-  <p>Name: {{ userResource.value().name }}</p>
-  <p>Email: {{ userResource.value().email }}</p>
-}
-
-<app-profile
-  [value]="userId()"
-  [(valueModel)]="newData"
-  (planClosed)="parentClicked($event)"
-></app-profile>
-<button (click)="nextUser()">Next User</button>
-
-<p>new {{ newData() }}</p>
+<app-header></app-header>
+<router-outlet></router-outlet>
