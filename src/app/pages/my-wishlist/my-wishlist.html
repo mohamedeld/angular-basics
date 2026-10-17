@@ -1,1 +1,23 @@
-<p>my-wishlist works!</p>
+<div class="mx-auto max-w-[1200px] py-6 px-4">
+  <app-back-button label="Continue Shopping" navigateTo="/products/all" />
+  @if (store.wishlistItems().length > 0) {
+    <div class="flex items-center justify-between gap-2 my-4">
+      <h1 class="text-2xl font-bold">My WishList</h1>
+      <span class="text-gray-500 text-xl"> {{ store.wishlistItems().length }} items </span>
+    </div>
+    <div class="responsive-grid">
+      @for (product of store.wishlistItems(); track product.id) {
+        <app-product-card [product]="product">
+          <app-remove-wishlist-button class="absolute! z-10 top-3 right-3" [product]="product" />
+        </app-product-card>
+      }
+    </div>
+    <div class="mt-8 flex justify-center">
+      <button matButton="outlined" class="danger" (click)="store.clearWithList()">
+        Clear Wishlist
+      </button>
+    </div>
+  } @else {
+    <app-empty-wishlist/>
+  }
+</div>

@@ -5,7 +5,7 @@
     </div>
 
     <mat-nav-list>
-      @for (cat of categories(); track cat) {
+      @for (cat of store?.categories(); track cat) {
         <mat-list-item
           class="my-2"
           [routerLink]="['/products', cat.toLowerCase()]"
@@ -27,10 +27,12 @@
       <h1 class="mb-6 text-2xl font-bold text-gray-900">
         {{ category() | titlecase }}
       </h1>
-      <p class="text-base text-gray-600 mb-6">{{ filteredProducts()?.length }} Products</p>
+      <p class="text-base text-gray-600 mb-6">{{ store?.filteredProducts()?.length }} Products</p>
       <div class="responsive-grid">
-        @for (item of filteredProducts(); track item.id) {
-          <app-product-card [product]="item" (productOutput)="addToCart($event)" />
+        @for (item of store?.filteredProducts(); track item.id) {
+          <app-product-card [product]="item" (productOutput)="addToCart($event)">
+            <app-toggle-wishlist-button class="absolute! z-10 top-3 right-3" [product]="item" />
+          </app-product-card>
         } @empty {
           <p class="text-gray-500">No products found.</p>
         }

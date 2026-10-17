@@ -13,7 +13,9 @@
         "@angular/material": "^22.2.3",
         "@angular/platform-browser": "^22.2.0",
         "@angular/router": "^22.2.0",
+        "@ngneat/overview": "8.0.0",
         "@ngrx/signals": "^22.0.1",
+        "@ngxpert/hot-toast": "^7.0.0",
         "@tailwindcss/postcss": "^4.3.3",
         "postcss": "^8.5.30",
         "rxjs": "~7.8.0",
@@ -278,7 +280,11 @@
 
     "@napi-rs/nice-win32-x64-msvc": ["@napi-rs/nice-win32-x64-msvc@1.1.1", "", { "os": "win32", "cpu": "x64" }, "sha512-vB+4G/jBQCAh0jelMTY3+kgFy00Hlx2f2/1zjMoH821IbplbWZOkLiTYXQkygNTzQJTq5cvwBDgn2ppHD+bglQ=="],
 
+    "@ngneat/overview": ["@ngneat/overview@8.0.0", "", { "dependencies": { "tslib": "^2.0.0" }, "peerDependencies": { "@angular/core": ">=21" } }, "sha512-le/9pOEyFigAQ1qGIKbkqv2qixe0fi58JHwbl5stlctFtnyRnyAVG0xcFl6rsd2pUtG/hBE7W8oFYi2O67YBSw=="],
+
     "@ngrx/signals": ["@ngrx/signals@22.0.1", "", { "dependencies": { "tslib": "^2.3.0" }, "peerDependencies": { "@angular/core": "^22.0.0", "rxjs": "^6.5.3 || ^7.4.0" }, "optionalPeers": ["rxjs"] }, "sha512-R62VsPrnH54LgA3LAqw+GWA9FHii526CH1aqah8aiK1RZocp+3N9rS3g5wrrXU655eVH65jhN4k/k+EFyxO/RA=="],
+
+    "@ngxpert/hot-toast": ["@ngxpert/hot-toast@7.0.0", "", { "dependencies": { "tslib": "^2.3.0" }, "peerDependencies": { "@angular/common": ">= 22.0.0", "@angular/core": ">= 22.0.0", "@angular/forms": ">= 22.0.0", "@ngneat/overview": ">= 8.0.0" }, "optionalPeers": ["@angular/forms"] }, "sha512-ZRcInI8pNl+UWD3Gfu5m3CsDZasWFhP1WwOmD4iPgybVuezsKvvTdbd08PwWXYZCA2vNgaFib4yVFogHwXon6Q=="],
 
     "@oxc-parser/binding-android-arm-eabi": ["@oxc-parser/binding-android-arm-eabi@0.150.0", "", { "os": "android", "cpu": "arm" }, "sha512-oQef2Zu4Prz1KLKznz3HqZzU9uVoA5PMoDZuuLmqms7hKmKSAPzlaMnLllJq3t+rgKmfJJ2siPrpZfFrW06btw=="],
 

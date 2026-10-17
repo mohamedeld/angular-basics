@@ -24,7 +24,12 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/material-theme.scss", "src/styles.css"]
+            "styles": [
+              "@ngxpert/hot-toast/styles.css",
+              "src/material-theme.scss",
+              "src/styles.css",
+              "@ngxpert/hot-toast/styles.css"
+            ]
           },
           "configurations": {
             "production": {
