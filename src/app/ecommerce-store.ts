@@ -1,8 +1,12 @@
+import { AuthUser } from './modes/user';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { Product } from './modes/product';
 import { computed, inject } from '@angular/core';
 import { Toaster } from './services/toaster';
 import { CartItem } from './modes/cart';
+import { MatDialog } from '@angular/material/dialog';
+import { SignInDialog } from './components/sign-in-dialog/sign-in-dialog';
+import { Router } from '@angular/router';
 
 export type EcommerceState = {
   products: Product[];
@@ -11,6 +15,7 @@ export type EcommerceState = {
   error: string | null;
   wishlistItems: Product[];
   cartItem: CartItem[];
+  currentUser: AuthUser | null;
 };
 
 const initialState: EcommerceState = {
@@ -237,6 +242,7 @@ const initialState: EcommerceState = {
   error: null,
   wishlistItems: [],
   cartItem: [],
+  currentUser: null,
 };
 
 export const EcommerceStore = signalStore(
@@ -259,131 +265,192 @@ export const EcommerceStore = signalStore(
       cartItem().reduce((total, item) => total + item.product.price * item.quantity, 0),
     ),
   })),
-  withMethods((store, toaster = inject(Toaster)) => ({
-    addToWishList: (product: Product): void => {
-      const alreadyOne = store.wishlistItems()?.some((item) => item.id === product?.id);
-      if (alreadyOne) {
-        return;
-      }
-      patchState(store, {
-        wishlistItems: [...store.wishlistItems(), product],
-      });
-      toaster.success('Product added to wishlist');
-    },
-    removeFromWishList: (productId: string): void => {
-      patchState(store, {
-        wishlistItems: store.wishlistItems().filter((item) => item?.id !== productId),
-      });
-      toaster.success('Product Removed to wishlist');
-    },
-    toggleWishList(product: Product): void {
-      const alreadyExists = store.wishlistItems().some((item) => item.id === product.id);
-
-      if (alreadyExists) {
+  withMethods(
+    (store, toaster = inject(Toaster), dialog = inject(MatDialog), router = inject(Router)) => ({
+      addToWishList: (product: Product): void => {
+        const alreadyOne = store.wishlistItems()?.some((item) => item.id === product?.id);
+        if (alreadyOne) {
+          return;
+        }
         patchState(store, {
-          wishlistItems: store.wishlistItems().filter((item) => item.id !== product.id),
+          wishlistItems: [...store.wishlistItems(), product],
+        });
+        toaster.success('Product added to wishlist');
+      },
+      removeFromWishList: (productId: string): void => {
+        patchState(store, {
+          wishlistItems: store.wishlistItems().filter((item) => item?.id !== productId),
+        });
+        toaster.success('Product Removed to wishlist');
+      },
+      toggleWishList(product: Product): void {
+        const alreadyExists = store.wishlistItems().some((item) => item.id === product.id);
+
+        if (alreadyExists) {
+          patchState(store, {
+            wishlistItems: store.wishlistItems().filter((item) => item.id !== product.id),
+          });
+
+          toaster.success('Product removed from wishlist');
+          return;
+        }
+
+        patchState(store, {
+          wishlistItems: [...store.wishlistItems(), product],
         });
 
-        toaster.success('Product removed from wishlist');
-        return;
-      }
+        toaster.success('Product added to wishlist');
+      },
 
-      patchState(store, {
-        wishlistItems: [...store.wishlistItems(), product],
-      });
-
-      toaster.success('Product added to wishlist');
-    },
-
-    isInWishList(productId: string): boolean {
-      return store.wishlistItems().some((product) => product.id === productId);
-    },
-    clearWithList(): void {
-      patchState(store, {
-        wishlistItems: [],
-      });
-    },
-    addToCart(product: Product): void {
-      if (!product.inStock) {
-        toaster.error('Product is out of stock');
-        return;
-      }
-      const existingItem = store.cartItem()?.some((item) => item?.product?.id === product?.id);
-      if (existingItem) {
+      isInWishList(productId: string): boolean {
+        return store.wishlistItems().some((product) => product.id === productId);
+      },
+      clearWithList(): void {
         patchState(store, {
-          cartItem: store
-            ?.cartItem()
-            ?.map((item) =>
-              item?.product?.id === product?.id ? { ...item, quantity: item?.quantity + 1 } : item,
-            ),
+          wishlistItems: [],
         });
-      } else {
-        patchState(store, {
-          cartItem: [...store.cartItem(), { product, quantity: 1 }],
-        });
-      }
-      toaster.success('Product added to cart');
-    },
-    removeFromCart(productId: string): void {
-      patchState(store, {
-        cartItem: store.cartItem().filter((item) => item.product.id !== productId),
-      });
-
-      toaster.success('Product removed from cart');
-    },
-    updateCartQuantity(productId: string, quantity: number): void {
-      if (!Number.isInteger(quantity) || quantity < 1) {
-        return;
-      }
-
-      patchState(store, {
-        cartItem: store
-          .cartItem()
-          .map((item) => (item.product.id === productId ? { ...item, quantity } : item)),
-      });
-    },
-
-    clearCart(): void {
-      patchState(store, {
-        cartItem: [],
-      });
-
-      toaster.success('Cart cleared successfully');
-    },
-    addAllWishlistToCart(): void {
-      const wishlist = store.wishlistItems();
-      const currentCart = store.cartItem();
-
-      const availableProducts = wishlist.filter((product) => product.inStock);
-
-      if (availableProducts.length === 0) {
-        toaster.error('No available wishlist products to add');
-        return;
-      }
-
-      const updatedCart = [...currentCart];
-
-      for (const product of availableProducts) {
-        const existingIndex = updatedCart.findIndex((item) => item.product.id === product.id);
-
-        if (existingIndex !== -1) {
-          updatedCart[existingIndex] = {
-            ...updatedCart[existingIndex],
-            quantity: updatedCart[existingIndex].quantity + 1,
-          };
+      },
+      addToCart(product: Product): void {
+        if (!product.inStock) {
+          toaster.error('Product is out of stock');
+          return;
+        }
+        const existingItem = store.cartItem()?.some((item) => item?.product?.id === product?.id);
+        if (existingItem) {
+          patchState(store, {
+            cartItem: store
+              ?.cartItem()
+              ?.map((item) =>
+                item?.product?.id === product?.id
+                  ? { ...item, quantity: item?.quantity + 1 }
+                  : item,
+              ),
+          });
         } else {
-          updatedCart.push({
-            product,
-            quantity: 1,
+          patchState(store, {
+            cartItem: [...store.cartItem(), { product, quantity: 1 }],
           });
         }
-      }
+        toaster.success('Product added to cart');
+      },
+      removeFromCart(productId: string): void {
+        patchState(store, {
+          cartItem: store.cartItem().filter((item) => item.product.id !== productId),
+        });
 
-      patchState(store, {
-        cartItem: updatedCart,
-      });
+        toaster.success('Product removed from cart');
+      },
+      updateCartQuantity(productId: string, quantity: number): void {
+        if (!Number.isInteger(quantity) || quantity < 1) {
+          return;
+        }
 
-      toaster.success('Wishlist products added to cart');
-    },
-  })),
+        patchState(store, {
+          cartItem: store
+            .cartItem()
+            .map((item) => (item.product.id === productId ? { ...item, quantity } : item)),
+        });
+      },
+
+      clearCart(): void {
+        patchState(store, {
+          cartItem: [],
+        });
+
+        toaster.success('Cart cleared successfully');
+      },
+      addAllWishlistToCart(): void {
+        const wishlist = store.wishlistItems();
+        const currentCart = store.cartItem();
+
+        const availableProducts = wishlist.filter((product) => product.inStock);
+
+        if (availableProducts.length === 0) {
+          toaster.error('No available wishlist products to add');
+          return;
+        }
+
+        const updatedCart = [...currentCart];
+
+        for (const product of availableProducts) {
+          const existingIndex = updatedCart.findIndex((item) => item.product.id === product.id);
+
+          if (existingIndex !== -1) {
+            updatedCart[existingIndex] = {
+              ...updatedCart[existingIndex],
+              quantity: updatedCart[existingIndex].quantity + 1,
+            };
+          } else {
+            updatedCart.push({
+              product,
+              quantity: 1,
+            });
+          }
+        }
+
+        patchState(store, {
+          cartItem: updatedCart,
+        });
+
+        toaster.success('Wishlist products added to cart');
+      },
+      proceedToCheckout() {
+        dialog.open(SignInDialog, {
+          disableClose: true,
+          data: {
+            checkout: true,
+          },
+        });
+      },
+
+      signIn(credentials: {
+        email: string;
+        password: string;
+        checkout?: boolean;
+        dialogId: string;
+      }) {
+        const email = credentials.email.trim().toLowerCase();
+        patchState(store, {
+          currentUser: {
+            email,
+            password: credentials?.password,
+          },
+        });
+        dialog.getDialogById(credentials?.dialogId)?.close();
+        if (credentials?.checkout) {
+          router.navigate(['/checkout']);
+        }
+        toaster.success('Signed in successfully');
+      },
+      signUp(credentials: {
+        name: string;
+        email: string;
+        password: string;
+        checkout?: boolean;
+        dialogId: string;
+      }) {
+        const name = credentials.name.trim();
+        const email = credentials.email.trim().toLowerCase();
+        patchState(store, {
+          currentUser: {
+            name,
+            email,
+            password: credentials?.password,
+          },
+        });
+        dialog.getDialogById(credentials?.dialogId)?.close();
+        if (credentials?.checkout) {
+          router.navigate(['/checkout']);
+        }
+        toaster.success('Signed up successfully');
+      },
+      signOut(): void {
+        patchState(store, {
+          currentUser: null,
+        });
+
+        toaster.success('Signed out successfully');
+      },
+    }),
+  ),
 );

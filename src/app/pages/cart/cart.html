@@ -12,7 +12,9 @@
     </div>
     <app-summarize-order>
       <ng-container actionButtons>
-        <button matButton="filled" class="w-full mt-6 py-3">Proceed To Checkout</button>
+        <button matButton="filled" class="w-full mt-6 py-3" (click)="store.proceedToCheckout()">
+          Proceed To Checkout
+        </button>
       </ng-container>
     </app-summarize-order>
   </div>
